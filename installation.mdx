@@ -1,0 +1,54 @@
+---
+title: Installation
+description: Build and install Cinder on a Paper 26.3 server.
+---
+
+## Requirements
+
+- Paper for Minecraft 26.3 (the project uses API `26.3.build.222-stable`).
+- Java 25 for the server and build toolchain.
+- Gradle 9.1 or newer to build from source.
+
+## Build
+
+From the Cinder source project root:
+
+```bash
+gradle clean test jar
+```
+
+Gradle writes `build/libs/Cinder-0.1.0.jar`. LuaJ is bundled in the plugin jar. Paper API is compile-only and supplied by the server.
+
+## Install
+
+1. Copy the jar to the Paper server's `plugins/` directory.
+2. Start or restart Paper.
+3. Check the startup log for Cinder's enable and script-load summary.
+4. Put `.lua` files beneath `plugins/Cinder/scripts/`.
+
+Cinder creates the plugin data folder, default `config.yml`, and scripts folder on first startup. Discovery is recursive; only files ending in `.lua` are executed.
+
+## Configuration
+
+The default `plugins/Cinder/config.yml` includes:
+
+```yaml
+scripts:
+  directory: scripts
+  load-on-startup: true
+interop:
+  allowed-package-prefixes:
+    - org.bukkit.
+    - io.papermc.paper.
+    - java.lang.
+    - java.util.
+```
+
+`directory` can be relative to the Cinder data folder or an absolute path. The interop allowlist controls class-name lookup but is not a security sandbox.
+
+## Permissions
+
+- `cinder.admin`: manage Cinder scripts; defaults to server operators.
+- Lua commands may declare a permission such as `cinder.hello` or `cinder.gmc`.
+
+See [Quickstart](/quickstart) to run your first script.

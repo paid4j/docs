@@ -1,0 +1,42 @@
+---
+title: Logging and configuration
+description: Cinder logging helpers, script metadata, and runtime config.
+---
+
+## Logging
+
+```lua
+cinder.log.info("Script loaded")
+cinder.log.warn("A recoverable issue occurred")
+cinder.log.error("An operation failed")
+```
+
+Messages are tagged with the script filename. Lua's `print(...)` is also redirected to the plugin logger.
+
+## Script metadata
+
+```lua
+cinder.log.info("Running " .. cinder.script.name .. " from " .. cinder.script.path)
+```
+
+## Configuration
+
+Cinder creates `plugins/Cinder/config.yml` with these main settings:
+
+```yaml
+scripts:
+  directory: scripts
+  load-on-startup: true
+interop:
+  allowed-package-prefixes:
+    - org.bukkit.
+    - io.papermc.paper.
+    - java.lang.
+    - java.util.
+```
+
+- `scripts.directory`: root for recursively discovered Lua files; relative to the Cinder data folder unless absolute.
+- `scripts.load-on-startup`: load scripts while Cinder enables.
+- `interop.allowed-package-prefixes`: class prefixes available through `cinder.java.type(...)`, subject to hard-denied sensitive classes.
+
+`cinder.config` exposes the underlying Paper configuration object through Java interop. Standard plugin permissions govern admin management commands and permissions declared by Lua commands; they do not sandbox scripts.

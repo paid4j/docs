@@ -1,0 +1,38 @@
+---
+title: Script lifecycle
+description: Reload, enable, disable, and inspect Lua scripts.
+---
+
+Cinder loads `.lua` files recursively from `plugins/Cinder/scripts/`. Management commands require `cinder.admin`, which defaults to operators.
+
+## Reload all scripts
+
+```text
+/cinder reload scripts
+```
+
+This cleans up Cinder-owned event handlers, scheduled tasks, and Lua command bindings, then discovers and runs every script again. A failing script is logged independently so it does not prevent other files from loading.
+
+## Disable a script or folder
+
+```text
+/cinder disable welcome.lua
+/cinder disable /events
+```
+
+A filename has no prefix; folder targets start with `/`. Paths are relative to the scripts root. Disabling does not delete the file. It unloads Cinder-managed resources belonging to the selected script(s).
+
+## Enable a script or folder
+
+```text
+/cinder enable welcome.lua
+/cinder enable /events
+```
+
+Enable executes only scripts not already loaded, so unrelated active scripts are not rerun. Folder loading is recursive. Failures are reported with the affected file path.
+
+Tab completion lists `.lua` files and folders; folders are displayed with a leading `/`. `/cinder commands` lists currently loaded Lua command labels.
+
+## Cleanup limits
+
+Cinder can undo its managed listeners, tasks, and command bindings. It cannot reverse arbitrary world changes or Java side effects caused by a script. Paper does not expose a public runtime unregister API for Brigadier commands, so Cinder's live command synchronization depends on Paper internals and should be checked after server upgrades.

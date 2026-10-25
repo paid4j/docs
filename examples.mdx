@@ -1,0 +1,24 @@
+---
+title: Examples
+description: Working Lua examples packaged with Cinder.
+---
+
+Copy desired `.lua` files from the Cinder project's `examples/` folder into `plugins/Cinder/scripts/`, then run `/cinder reload scripts`.
+
+## Game modes
+
+The examples register `/gmc`, `/gms`, and `/gmsp` to change a player's game mode and send an action-bar confirmation. They require `cinder.gmc`, `cinder.gms`, and `cinder.gmsp` respectively.
+
+## Player join and events
+
+`welcome.lua` welcomes a player on `PlayerJoinEvent`. `cancel-event.lua` cancels fire damage using the `EntityDamageEvent` API and a high event priority.
+
+## Tasks and Java access
+
+`delayed.lua` schedules a broadcast after 20 ticks. `interop.lua` obtains online players through `cinder.java.type("org.bukkit.Bukkit")`.
+
+## Commands with validation and completion
+
+`heal.lua` shows a permissioned command and sender checks. `validate.lua` demonstrates validating an announcement before broadcasting it.
+
+These examples use the implemented API but still run with administrator-level trust; they are not sandboxed.

@@ -1,47 +1,60 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "Install Cinder and run a first Lua script on Paper."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+## Requirements
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+- Paper for Minecraft 26.3.
+- Java 25 for Paper and the Gradle build.
+- Gradle 9.1 or newer to build from source.
 
-## Prerequisites
+## Build
 
-Before you begin, you must have:
+From the Cinder source project root, run:
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+```bash
+gradle clean test jar
+```
 
-## Get started
+The plugin is produced at `build/libs/Cinder-0.1.0.jar`. It bundles LuaJ; Paper API is provided by the server.
 
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+## Install
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+1. Copy `Cinder-0.1.0.jar` into the server's `plugins/` folder.
+2. Start or restart Paper 26.3.
+3. Confirm the log reports Cinder enabled.
+4. Create `plugins/Cinder/scripts/hello.lua`:
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+```lua
+cinder.commands.register("hello", {
+    permission = "cinder.hello",
+    execute = function(sender, args)
+        sender:sendMessage("Hello from Cinder Lua!")
+    end
+})
+```
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+5. Run `/cinder reload scripts` as an operator or a sender with `cinder.admin`.
+6. Grant `cinder.hello` to a player and run `/hello`.
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+Cinder creates its data folder, default config, and scripts directory at startup. Script files are discovered recursively; only `.lua` files are loaded.
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+## Manage scripts
+
+```text
+/cinder reload scripts
+/cinder disable welcome.lua
+/cinder enable welcome.lua
+/cinder disable /events
+/cinder enable /events
+/cinder commands
+```
+
+Paths are relative to `plugins/Cinder/scripts/`. A Lua filename has no prefix; folder names begin with `/` to distinguish them. Reload reloads all scripts; enable loads only currently disabled files so it does not rerun unrelated loaded scripts.
+
+The management commands require `cinder.admin`, which defaults to operators. See the [Commands](/commands), [Events](/events), and [Tasks](/tasks) guides for APIs.
+
+<Warning>
+  Cinder is for trusted administrator-written scripts, not untrusted user code. It has no enforceable execution-time limit.
+</Warning>

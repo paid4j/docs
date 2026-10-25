@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "Cinder",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#B35A32",
+    "light": "#D67B4D",
+    "dark": "#7E3D25"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -14,7 +14,16 @@
         "group": "Getting Started",
         "pages": [
           "index",
-          "quickstart"
+          "quickstart",
+          "commands",
+          "events",
+          "tasks",
+          "java-interop",
+          "script-lifecycle",
+          "security-limitations",
+          "examples",
+          "installation",
+          "logging-config"
         ]
       }
     ],
@@ -68,5 +77,6 @@
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
     }
-  }
+  },
+  "description": "Documentation for Cinder, a Lua scripting plugin for Paper Minecraft servers."
 }

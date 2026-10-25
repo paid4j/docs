@@ -1,0 +1,27 @@
+---
+title: Security and limitations
+description: Understand trust, threading, Java interop, and runtime constraints.
+---
+
+## Scripts are trusted code
+
+Cinder is designed for Lua written by trusted server administrators. It is **not a secure sandbox**. Removing LuaJ's filesystem/OS/debug/module globals and restricting class-name lookups are defense-in-depth only. Java objects exposed to scripts can provide powerful server access.
+
+Cinder enforces no script execution-time limit. Infinite loops or expensive synchronous callbacks can stall the server thread. Do not run scripts from untrusted users.
+
+## Threading
+
+- Event handlers follow Paper/Bukkit event dispatch threading.
+- Command and synchronous task callbacks execute in normal server contexts.
+- Async tasks must not access unsafe Bukkit/Paper state. Use `cinder.tasks.sync(callback)` to return to the server thread.
+- Per-script Lua access is serialized; this does not make Paper objects safe for background use.
+
+## Reload limits
+
+Cinder cleans its managed listeners, scheduled tasks, and Lua command bindings when scripts reload or disable. It cannot undo arbitrary world mutations, Java API side effects, or external effects. A script that fails after making a side effect may require manual recovery.
+
+Paper's lifecycle command registrar does not expose a supported dynamic unregister handle. Cinder uses Paper internals to synchronize dynamically loaded and disabled command labels. This is version-sensitive and should be revalidated against each Paper upgrade.
+
+## Incomplete interop coverage
+
+Cinder supports common public Java operations, conversions, enums, arrays, and collections, but does not claim full Paper API coverage. Some generics, varargs, overload coercions, complex table conversion, and uncommon accessors are unsupported. Java constructors are public-only.

@@ -1,0 +1,37 @@
+---
+title: Events
+description: Listen to Bukkit and Paper events from Lua.
+---
+
+Use `cinder.events.on(eventName, callback[, options])`:
+
+```lua
+cinder.events.on("PlayerJoinEvent", function(event)
+    local player = event:getPlayer()
+    player:sendMessage("Welcome, " .. player:getName() .. "!")
+end)
+```
+
+The callback receives the actual Java/Paper event object through the interop bridge. Public event methods and fields are available, including cancellation methods for cancellable events.
+
+## Event names
+
+Use a fully qualified event class name or a short class name. Short names are resolved in common Bukkit event packages (player, entity, block, inventory, server) and Paper player/entity event packages. Unknown classes fail that script's initialization and are logged with the file path.
+
+## Priority and cancellation
+
+The optional options table accepts `priority` and `ignoreCancelled`:
+
+```lua
+cinder.events.on("EntityDamageEvent", function(event)
+    if event:getCause():name() == "FIRE" then
+        event:setCancelled(true)
+    end
+end, { priority = "HIGH", ignoreCancelled = true })
+```
+
+Valid priorities are `LOWEST`, `LOW`, `NORMAL`, `HIGH`, `HIGHEST`, and `MONITOR`. As in Bukkit, do not mutate events at `MONITOR`. `ignoreCancelled` defaults to `false`.
+
+## Threading and cleanup
+
+Callbacks run on the event system's dispatch thread; Cinder does not move event handlers to workers. Follow Paper's thread-safety rules. Lua execution is serialized per script context. Cinder unregisters a script's event listeners when it is disabled, reloaded, or shut down.

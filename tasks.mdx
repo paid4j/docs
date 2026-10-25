@@ -1,0 +1,38 @@
+---
+title: "Tasks"
+description: "Schedule delayed, repeating, and asynchronous callbacks."
+---
+
+Cinder schedules server-thread tasks in Minecraft ticks. At 20 TPS, 20 ticks is approximately one second.
+
+```lua
+cinder.tasks.later(20, function()
+    cinder.server:broadcastMessage("One second has passed!")
+end)
+```
+
+## Repeating work
+
+```lua
+local task = cinder.tasks.repeatEvery(20, 100, function()
+    cinder.server:broadcastMessage("Repeats every five seconds")
+end)
+```
+
+`repeatEvery(delayTicks, periodTicks, callback)` requires a period of at least one tick.
+
+## Async and sync work
+
+```lua
+cinder.tasks.async(function()
+    -- Only thread-safe non-Bukkit work here.
+    local result = calculateSomething()
+    cinder.tasks.sync(function()
+        cinder.server:broadcastMessage(result)
+    end)
+end)
+```
+
+Available methods: `later`, `repeatEvery`, `async`, `repeatAsync`, and `sync`. Async callbacks must not touch unsafe Paper state. Use `sync` to schedule a server-thread continuation.
+
+Each scheduled task returns a handle with `:cancel()`. Cinder tracks task ownership and cancels tasks when their script is disabled, reloaded, or Cinder shuts down. No execution-time limit is enforced; avoid blocking the server thread.

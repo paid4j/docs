@@ -1,0 +1,57 @@
+---
+title: Commands
+description: Register Lua commands with permissions and tab completion.
+---
+
+Register a command with `cinder.commands.register(name, options)`:
+
+```lua
+cinder.commands.register("announce", {
+    permission = "cinder.announce",
+    execute = function(sender, args)
+        if #args == 0 then
+            sender:sendMessage("Usage: /announce <message>")
+            return
+        end
+        cinder.server:broadcastMessage("[Announcement] " .. table.concat(args, " "))
+    end,
+    complete = function(sender, args)
+        return {}
+    end
+})
+```
+
+`execute` is required. `permission` and `complete` are optional. The callback receives a Paper sender facade and a 1-based Lua array of arguments. If no completion callback is supplied, Cinder returns no suggestions.
+
+## Sender helpers
+
+- `sender:isPlayer()` checks whether the sender is a player.
+- `sender:asPlayer()` returns the underlying Paper player, or raises a Lua error when the sender is not a player.
+- Public methods on the underlying Paper sender are also available.
+
+```lua
+if not sender:isPlayer() then
+    sender:sendMessage("Players only.")
+    return
+end
+local player = sender:asPlayer()
+```
+
+## Tab completion
+
+Return a Lua array of suggestion strings:
+
+```lua
+complete = function(sender, args)
+    if #args == 1 then
+        return {"day", "night"}
+    end
+    return {}
+end
+```
+
+## Runtime and cleanup
+
+Cinder registers stable Paper command entries and binds them to the Lua handlers from loaded scripts. Reloading scripts changes the handlers and Cinder synchronizes the command tree for connected clients. Disabling a script removes its registered labels from the live dispatcher where supported. This runtime synchronization depends on Paper internals and must be rechecked after Paper updates.
+
+Run `/cinder commands` to list Lua labels currently owned by loaded scripts. See the [script lifecycle guide](/script-lifecycle).

@@ -1,0 +1,27 @@
+---
+title: Java interop
+description: Call public Java and Paper APIs from Lua.
+---
+
+Objects passed into Lua—such as players and events—can expose public Java methods and fields. Use `cinder.java.type(className)` to look up an allowed Java class:
+
+```lua
+local Bukkit = cinder.java.type("org.bukkit.Bukkit")
+local players = Bukkit:getOnlinePlayers()
+cinder.log.info("Players online: " .. players:size())
+```
+
+## Supported bridge features
+
+The interop layer supports public instance and static methods, public fields, JavaBean-style getter properties, public constructors, enum constants, arrays, and common collections. Lua strings, booleans, numbers, and `nil` map to common Java values. Java `null` returns Lua `nil`. Method overloads are selected by type compatibility; equal-best matches fail explicitly as ambiguous.
+
+```lua
+local GameMode = cinder.java.type("org.bukkit.GameMode")
+player:setGameMode(GameMode.CREATIVE)
+```
+
+## Access policy and limits
+
+Class lookup uses `interop.allowed-package-prefixes` from Cinder's `config.yml`; default prefixes include `org.bukkit.`, `io.papermc.paper.`, `java.lang.`, and `java.util.`. Sensitive runtime, reflection, filesystem, and network types are denied.
+
+This is **not a security sandbox**. Exposed Java objects may provide powerful access to the server. Some Java generics, varargs, overload coercions, complex table conversions, and unusual accessors are unsupported. Constructors are public-only, and there is no script execution-time limit. Run only trusted scripts.
